@@ -4,14 +4,6 @@ import torch.nn as nn
 from torch import Tensor
 
 
-def create_pixel_coords(height: int, width: int, device=torch.device):
-    dim0_range = torch.linspace(start=-2, end=2, steps=height).to(device)
-    dim1_range = torch.linspace(start=-2, end=2, steps=width).to(device)
-    grids = torch.meshgrid(dim0_range, dim1_range)
-    pixel_coords = torch.stack(grids, dim=-1)
-    return pixel_coords
-
-
 class Encoder(nn.Module):
     def __init__(self, embedding_size: int):
         super(Encoder, self).__init__()
