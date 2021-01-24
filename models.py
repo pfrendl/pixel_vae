@@ -78,8 +78,9 @@ class Decoder(nn.Module):
     def forward(self, embedding: Tensor, height: int, width: int) -> Tensor:
         x = embedding  # (batch_size, embedding_size)
 
+        batch_size = embedding.shape[0]
         position_embeddings = self.position_embedding(height, width, embedding.device)  # (height * width, 2)
-        position_embeddings = position_embeddings[None, :, :].expand(x.shape[0], -1, -1)  # (batch_size, height * width, 2)
+        position_embeddings = position_embeddings[None, :, :].expand(batch_size, -1, -1)  # (batch_size, height * width, 2)
         x = x[:, None, :].expand(-1, position_embeddings.shape[1], -1)  # (batch_size, height * width, embedding_size)
 
         x = torch.cat([x, position_embeddings], axis=2)  # (batch_size, height * width, embedding_size + 2)
