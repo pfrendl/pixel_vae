@@ -34,21 +34,6 @@ class Encoder(nn.Module):
         return mean, log_std
 
 
-class SkipBlock(nn.Module):
-    def __init__(self, size: int, scaling: float):
-        super(SkipBlock, self).__init__()
-        scaled_size = int(scaling * size)
-        self.fc0 = nn.Linear(size, scaled_size)
-        self.fc1 = nn.Linear(scaled_size, scaled_size)
-        self.fc2 = nn.Linear(scaled_size, size)
-
-    def forward(self, x):
-        y = torch.relu(self.fc0(x))
-        y = torch.relu(self.fc1(y))
-        y = self.fc2(y)
-        return x + y
-
-
 class PositionEmbedding(nn.Module):
     def __init__(self, embedding_size: int):
         super(PositionEmbedding, self).__init__()
@@ -71,9 +56,11 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.position_embedding = PositionEmbedding(pos_embedding_size)
         self.fc0 = nn.Linear(img_embedding_size + pos_embedding_size, hidden_size)
-        self.sb0 = SkipBlock(hidden_size, 1)
-        self.sb1 = SkipBlock(hidden_size, 1)
-        self.fc1 = nn.Linear(hidden_size, 3)
+        self.fc1 = nn.Linear(hidden_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, hidden_size)
+        self.fc4 = nn.Linear(hidden_size, hidden_size)
+        self.fc5 = nn.Linear(hidden_size, 3)
 
     def forward(self, embedding: Tensor, height: int, width: int) -> Tensor:
         x = embedding  # (batch_size, embedding_size)
@@ -87,9 +74,11 @@ class Decoder(nn.Module):
         x = x.view((-1, x.shape[2]))  # (batch_size * height * width, embedding_size + 2)
 
         x = torch.relu(self.fc0(x))  # (batch_size * height * width, embedding_size)
-        x = self.sb0(x)
-        x = self.sb1(x)
-        x = self.fc1(x)  # (batch_size * height * width, 3)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = torch.relu(self.fc3(x))
+        x = torch.relu(self.fc4(x))
+        x = self.fc5(x)  # (batch_size * height * width, 3)
 
         x = x.view((embedding.shape[0], height, width, 3))  # (batch_size, height, width, 3)
         x = x.permute((0, 3, 1, 2))  # (batch_size, 3, height, width)
