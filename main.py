@@ -11,7 +11,7 @@ import models
 if __name__ == "__main__":
     device = torch.device("cuda")
     img_embedding_size = 128
-    pos_embedding_size = 32
+    pos_embedding_size = 128
     decoder_hidden_size = 128
     batch_size = 1
 

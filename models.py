@@ -14,7 +14,6 @@ class Encoder(nn.Module):
         self.cl4 = nn.Conv2d(32, 32, 3, 2, 2)
         self.cl5 = nn.Conv2d(32, 64, 3, 2, 2)
         self.cl6 = nn.Conv2d(64, embedding_size, 3, 2, 2)
-        self.fc0 = nn.Linear(embedding_size, embedding_size)
         self.mean = nn.Linear(embedding_size, embedding_size)
         self.std = nn.Linear(embedding_size, embedding_size)
 
@@ -28,7 +27,6 @@ class Encoder(nn.Module):
         x = torch.relu(self.cl6(x))
         # print("x.shape ---", x.shape)
         x = torch.mean(x, dim=(2, 3))
-        x = torch.relu(self.fc0(x))
         mean = self.mean(x)
         log_std = self.std(x)
         return mean, log_std
@@ -41,8 +39,8 @@ class PositionEmbedding(nn.Module):
         self.fc1 = nn.Linear(128, embedding_size)
 
     def forward(self, height: int, width: int, device: torch.device) -> Tensor:
-        dim0_range = torch.linspace(start=-2, end=2, steps=height).to(device)
-        dim1_range = torch.linspace(start=-2, end=2, steps=width).to(device)
+        dim0_range = torch.linspace(start=-5, end=5, steps=height).to(device)
+        dim1_range = torch.linspace(start=-5, end=5, steps=width).to(device)
         grids = torch.meshgrid(dim0_range, dim1_range)
         pixel_coords = torch.stack(grids, dim=-1)  # (height, width, 2)
         x = pixel_coords.view((-1, 2))  # (height * width, 2)
