@@ -16,7 +16,7 @@ if __name__ == "__main__":
     batch_size = 1
 
     image_paths = glob.glob("images/*.jfif")
-    images = [np.asarray(Image.open(image_path)) for image_path in image_paths]
+    images = [np.asarray(Image.open(image_path)) for image_path in image_paths][:1]
     for i in range(len(images)):
         image = images[i]
         dimensions = image.shape[:2]
@@ -36,8 +36,8 @@ if __name__ == "__main__":
         hidden_size=decoder_hidden_size
     ).to(device)
 
-    encoder_opt = torch.optim.Adam(encoder.parameters(), lr=0.001)
-    decoder_opt = torch.optim.Adam(decoder.parameters(), lr=0.001)
+    encoder_opt = torch.optim.Adam(encoder.parameters(), lr=0.004)
+    decoder_opt = torch.optim.Adam(decoder.parameters(), lr=0.004)
     encoder_scheduler = torch.optim.lr_scheduler.ExponentialLR(encoder_opt, gamma=0.99999)
     decoder_scheduler = torch.optim.lr_scheduler.ExponentialLR(decoder_opt, gamma=0.99999)
 
