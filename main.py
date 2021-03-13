@@ -11,8 +11,8 @@ import models
 if __name__ == "__main__":
     device = torch.device("cuda")
     img_embedding_size = 128
-    pos_embedding_size = 128
-    decoder_hidden_size = 128
+    pos_embedding_size = 256
+    decoder_hidden_size = 256
     batch_size = 1
 
     image_paths = glob.glob("images/*.jfif")
